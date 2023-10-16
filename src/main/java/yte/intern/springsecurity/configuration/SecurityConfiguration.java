@@ -20,19 +20,28 @@ public class SecurityConfiguration {
         UserDetails user = User.builder()
                 .username("ruchan")
                 .password(passwordEncoder.encode("1234"))
-                .authorities("READ", "ROLE_USER")
+                .roles("USER")
+                .build();
+
+        UserDetails admin = User.builder()
+                .username("admin")
+                .password(passwordEncoder.encode("1234"))
+                .roles("ADMIN")
                 .build();
 
         authenticationManagerBuilder.inMemoryAuthentication()
                 .withUser(user)
+                .withUser(admin)
                 .passwordEncoder(passwordEncoder);
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.authorizeHttpRequests()
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/hello")).hasAuthority("ROLE_USER")
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/hi")).hasRole("READ")
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/user"))
+                    .hasAnyRole("USER", "ADMIN")
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/admin"))
+                    .hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
