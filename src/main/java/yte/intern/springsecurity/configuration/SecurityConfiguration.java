@@ -3,12 +3,16 @@ package yte.intern.springsecurity.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import yte.intern.springsecurity.CustomAuthenticationProvider;
 import yte.intern.springsecurity.service.CustomUserDetailsService;
 
 
@@ -33,9 +37,9 @@ public class SecurityConfiguration {
 //                .roles("ADMIN")
 //                .build();
 
-        authenticationManagerBuilder
-                .userDetailsService(customUserDetailsService)
-                .passwordEncoder(NoOpPasswordEncoder.getInstance());
+//        authenticationManagerBuilder
+//                .userDetailsService(customUserDetailsService)
+//                .passwordEncoder(NoOpPasswordEncoder.getInstance());
 
 //                .inMemoryAuthentication()
 //                .withUser(user)
@@ -44,17 +48,26 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity.authorizeHttpRequests()
+    public AuthenticationManager authenticationManager(CustomAuthenticationProvider customAuthenticationProvider) {
+        return new ProviderManager(customAuthenticationProvider);
+    }
 
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/login"))
-                    .permitAll()
-                .requestMatchers(AntPathRequestMatcher.antMatcher("/secret"))
-                    .denyAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .disable()
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity
+                .authorizeHttpRequests(authorize ->
+                        authorize.requestMatchers(new AntPathRequestMatcher("/login"))
+                        .permitAll()
+                )
+                .authorizeHttpRequests(authorize ->
+                        authorize.requestMatchers(new AntPathRequestMatcher("/secret"))
+                                .denyAll()
+                                .anyRequest()
+                                .authenticated()
+                )
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
                 .build();
 
     }

@@ -18,6 +18,10 @@ import java.util.Set;
 @NoArgsConstructor
 public class Authority implements GrantedAuthority {
 
+    public Authority(String authority) {
+        this.authority = authority;
+    }
+
     @Id
     @GeneratedValue
     private Long id;
@@ -26,4 +30,5 @@ public class Authority implements GrantedAuthority {
     private Set<Users> users;
 
     private String authority;
+
 }

@@ -21,7 +21,7 @@ public class Users implements UserDetails {
     private String password;
 
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "USER_AUTHORITIES",
             joinColumns = @JoinColumn(name = "USER_ID"),
