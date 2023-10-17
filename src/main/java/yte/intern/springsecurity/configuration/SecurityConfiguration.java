@@ -6,13 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import yte.intern.springsecurity.service.CustomerUserDetailsService;
+import yte.intern.springsecurity.service.CustomUserDetailsService;
 
 
 @Configuration
@@ -21,7 +18,7 @@ public class SecurityConfiguration {
 
     @Autowired
     public SecurityConfiguration(AuthenticationManagerBuilder authenticationManagerBuilder,
-                                 CustomerUserDetailsService customerUserDetailsService)
+                                 CustomUserDetailsService customUserDetailsService)
         throws Exception {
 //        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 //        UserDetails user = User.builder()
@@ -37,7 +34,7 @@ public class SecurityConfiguration {
 //                .build();
 
         authenticationManagerBuilder
-                .userDetailsService(customerUserDetailsService)
+                .userDetailsService(customUserDetailsService)
                 .passwordEncoder(NoOpPasswordEncoder.getInstance());
 
 //                .inMemoryAuthentication()
@@ -57,7 +54,7 @@ public class SecurityConfiguration {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .and()
+                .disable()
                 .build();
 
     }

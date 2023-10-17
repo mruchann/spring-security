@@ -8,7 +8,7 @@ import yte.intern.springsecurity.entity.CustomUser;
 import java.util.Collections;
 
 @Service
-public class CustomerUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         return new CustomUser(
